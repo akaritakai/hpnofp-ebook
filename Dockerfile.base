@@ -1,0 +1,38 @@
+FROM debian:latest
+
+# Set up system dependencies
+WORKDIR "/opt/book"
+RUN mkdir -p /usr/share/desktop-directories && \
+    apt-get update && \
+    apt-get install -y default-jre \
+                       libegl1 \
+                       libopengl0 \
+                       libxcb-cursor0 \
+                       libxkbcommon-x11-0 \
+                       python3 \
+                       unzip \
+                       wget \
+                       xdg-utils \
+                       xz-utils \
+                       zip && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Calibre
+RUN wget https://download.calibre-ebook.com/linux-installer.sh && \
+    chmod +x ./linux-installer.sh && \
+    ./linux-installer.sh && \
+    rm -f ./linux-installer.sh
+
+# Download epubcheck
+RUN wget "https://github.com/w3c/epubcheck/releases/download/v5.1.0/epubcheck-5.1.0.zip" && \
+    unzip -o "./epubcheck-5.1.0.zip" && \
+    rm -f "./epubcheck-5.1.0.zip"
+
+# Download EB Garamond
+RUN wget -O "./EB_Garamond.zip" "https://fonts.google.com/download?family=EB%20Garamond" && \
+    unzip -o ./EB_Garamond.zip -d ./EB_Garamond && \
+    rm -f ./EB_Garamond.zip && \
+    mkdir -p /usr/share/fonts/truetype/custom && \
+    mv ./EB_Garamond /usr/share/fonts/truetype/custom && \
+    rm -rf ./EB_Garamond && \
+    fc-cache -f -v
